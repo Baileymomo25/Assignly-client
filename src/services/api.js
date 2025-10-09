@@ -8,14 +8,20 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000,
+  timeout: 10000, // 10 second timeout
 });
 
-
+fetch(`${API_BASE_URL}/api/your-endpoint`)
+  .then(response => response.json())
+  .then(data => console.log(data));
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
     console.log('API Request:', config.method?.toUpperCase(), config.url);
+    return config;
+  },
+  (config) => {
+    console.log('Backend URL:', API_BASE_URL);
     return config;
   },
   (error) => {
