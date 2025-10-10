@@ -5,6 +5,8 @@ import Request from './pages/Request'
 import Payment from './pages/Payment'
 import Success from './pages/Success'
 import { AppProvider } from './context/AppContext'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsOfService from './pages/TermsOfService'
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
             <Route path="/success" element={<Success />} />
             {/* Add a catch-all route for 404s */}
             <Route path="*" element={<NotFound />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
           </Routes>
         </Layout>
       </Router>

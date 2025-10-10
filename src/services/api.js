@@ -1,5 +1,4 @@
 import axios from 'axios';
-import config from '../config';
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://assignly2.onrender.com';
 
@@ -11,16 +10,10 @@ const api = axios.create({
   timeout: 10000, // 10 second timeout
 });
 
-fetch(`${API_BASE_URL}/api/your-endpoint`)
-  .then(response => response.json())
-  .then(data => console.log(data));
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
     console.log('API Request:', config.method?.toUpperCase(), config.url);
-    return config;
-  },
-  (config) => {
     console.log('Backend URL:', API_BASE_URL);
     return config;
   },
@@ -38,18 +31,15 @@ api.interceptors.response.use(
   },
   (error) => {
     console.error('API Response Error:', error);
-    
+
     if (error.response) {
-      // Server responded with error status
       console.error('Error details:', error.response.data);
     } else if (error.request) {
-      // Request was made but no response received
       console.error('No response received:', error.request);
     } else {
-      // Something else happened
       console.error('Error message:', error.message);
     }
-    
+
     return Promise.reject(error);
   }
 );

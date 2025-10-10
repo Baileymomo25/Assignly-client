@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Button from '../UI/Button'
 import FileUpload from './FileUpload'
+import pricingConfig from '../../config/pricing'
 
 export default function RequestForm({ onSubmit, isLoading }) {
   const [formData, setFormData] = useState({
@@ -11,10 +12,15 @@ export default function RequestForm({ onSubmit, isLoading }) {
     workType: '',
     deadline: '',
     notes: '',
-    files: []
+    files: [],
+    // New pricing fields
+    pageCount: 1,
+    diagramCount: 0,
+    deliveryType: pricingConfig.deliveryTypes.SOFT_COPY
   })
 
   const [errors, setErrors] = useState({})
+  const [showPricePreview, setShowPricePreview] = useState(false)
 
   const validateForm = () => {
     const newErrors = {}
@@ -25,7 +31,14 @@ export default function RequestForm({ onSubmit, isLoading }) {
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required'
     if (!formData.workType) newErrors.workType = 'Please select a work type'
     if (!formData.deadline) newErrors.deadline = 'Deadline is required'
+    if (!formData.pageCount || formData.pageCount < 1) newErrors.pageCount = 'Page count must be at least 1'
+    if (formData.diagramCount < 0) newErrors.diagramCount = 'Diagram count cannot be negative'
     
+    // Validate deadline is not in the past
+    if (formData.deadline && new Date(formData.deadline) < new Date()) {
+      newErrors.deadline = 'Deadline cannot be in the past'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -33,13 +46,29 @@ export default function RequestForm({ onSubmit, isLoading }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (validateForm()) {
-      onSubmit(formData)
+      // Calculate final price before submitting
+      const finalPrice = pricingConfig.calculatePrice(formData)
+      const priceBreakdown = pricingConfig.getPriceBreakdown(formData)
+      
+      const submissionData = {
+        ...formData,
+        totalPrice: finalPrice,
+        priceBreakdown: priceBreakdown
+      }
+      
+      onSubmit(submissionData)
     }
   }
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    const { name, value, type } = e.target
+    const parsedValue = type === 'number' ? parseInt(value) || 0 : value
+    
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: parsedValue 
+    }))
+    
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }))
     }
@@ -47,6 +76,19 @@ export default function RequestForm({ onSubmit, isLoading }) {
 
   const handleFilesUpload = (files) => {
     setFormData(prev => ({ ...prev, files }))
+  }
+
+  const calculatePreviewPrice = () => {
+    return pricingConfig.calculatePrice(formData)
+  }
+
+  const getPriceBreakdownPreview = () => {
+    return pricingConfig.getPriceBreakdown(formData)
+  }
+
+  const getDaysUntilDeadline = () => {
+    if (!formData.deadline) return null
+    return Math.ceil((new Date(formData.deadline) - new Date()) / (1000 * 60 * 60 * 24))
   }
 
   return (
@@ -58,6 +100,7 @@ export default function RequestForm({ onSubmit, isLoading }) {
       className="space-y-6"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Personal Information */}
         <div>
           <label htmlFor="fullName" className="label">Full Name</label>
           <input
@@ -111,16 +154,72 @@ export default function RequestForm({ onSubmit, isLoading }) {
           >
             <option value="">Select work type</option>
             <option value="assignment">Assignment</option>
-            <option value="slides">Presentation Slides</option>
+            <option value="project">Project</option>
             <option value="thesis">Thesis</option>
             <option value="report">Report</option>
-            <option value="project">Project</option>
+            <option value="presentation">Presentation Slides</option>
           </select>
           {errors.workType && <p className="text-red-500 text-sm mt-1">{errors.workType}</p>}
         </div>
 
+        {/* Pricing Information */}
         <div>
-          <label htmlFor="deadline" className="label">Deadline</label>
+          <label htmlFor="pageCount" className="label">Number of Pages</label>
+          <input
+            type="number"
+            id="pageCount"
+            name="pageCount"
+            value={formData.pageCount}
+            onChange={handleInputChange}
+            min="1"
+            max="100"
+            className="input-field"
+          />
+          {errors.pageCount && <p className="text-red-500 text-sm mt-1">{errors.pageCount}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="diagramCount" className="label">Number of Diagrams</label>
+          <input
+            type="number"
+            id="diagramCount"
+            name="diagramCount"
+            value={formData.diagramCount}
+            onChange={handleInputChange}
+            min="0"
+            max="50"
+            className="input-field"
+          />
+          {errors.diagramCount && <p className="text-red-500 text-sm mt-1">{errors.diagramCount}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="deliveryType" className="label">Delivery Type</label>
+          <select
+            id="deliveryType"
+            name="deliveryType"
+            value={formData.deliveryType}
+            onChange={handleInputChange}
+            className="input-field"
+          >
+            <option value={pricingConfig.deliveryTypes.SOFT_COPY}>Soft Copy Only (₦200/page)</option>
+            <option value={pricingConfig.deliveryTypes.PRINTED}>Printed Document (₦300/page)</option>
+            <option value={pricingConfig.deliveryTypes.PRINTED_SPIRAL}>Printed & Spiral Bound (₦300/page + ₦300 binding)</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="deadline" className="label">
+            Deadline
+            {getDaysUntilDeadline() !== null && (
+              <span className={`ml-2 text-sm ${
+                getDaysUntilDeadline() < 3 ? 'text-red-600 font-bold' : 'text-green-600'
+              }`}>
+                ({getDaysUntilDeadline()} days)
+                {getDaysUntilDeadline() < 3 && ' - Impromptu fee applies'}
+              </span>
+            )}
+          </label>
           <input
             type="date"
             id="deadline"
@@ -135,7 +234,7 @@ export default function RequestForm({ onSubmit, isLoading }) {
       </div>
 
       <div>
-        <label htmlFor="notes" className="label">Additional Notes</label>
+        <label htmlFor="notes" className="label">Additional Notes & Requirements</label>
         <textarea
           id="notes"
           name="notes"
@@ -143,13 +242,42 @@ export default function RequestForm({ onSubmit, isLoading }) {
           onChange={handleInputChange}
           rows={4}
           className="input-field"
-          placeholder="Any specific requirements or instructions..."
+          placeholder="Any specific requirements, instructions, or special requests..."
         />
       </div>
 
       <div>
         <label className="label">Upload Files (Optional)</label>
         <FileUpload onFilesUpload={handleFilesUpload} />
+      </div>
+
+      {/* Price Preview */}
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="font-semibold text-gray-900">Estimated Price</h3>
+          <button
+            type="button"
+            onClick={() => setShowPricePreview(!showPricePreview)}
+            className="text-primary-600 hover:text-primary-700 text-sm font-medium"
+          >
+            {showPricePreview ? 'Hide Details' : 'Show Details'}
+          </button>
+        </div>
+        
+        <div className="text-2xl font-bold text-primary-600 mb-2">
+          ₦{calculatePreviewPrice().toLocaleString()}
+        </div>
+
+        {showPricePreview && (
+          <div className="text-sm text-gray-600 space-y-1">
+            {getPriceBreakdownPreview().map((item, index) => (
+              <div key={index} className="flex justify-between">
+                <span>{item.item}</span>
+                <span>₦{item.amount.toLocaleString()}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <Button type="submit" disabled={isLoading} className="w-full">
