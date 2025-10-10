@@ -33,12 +33,15 @@ export default function Header() {
                 }}
               />
               {/* Text fallback logo - hidden by default */}
-              <span 
-                 className="text-4xl md:text-3xl font-bold text-primary-600" Made Simple
-                style={{ display: 'block' }}
-              >
-                Assignly
-              </span>
+              <div className="flex flex-col">
+                <span 
+                  className="text-4xl md:text-3xl font-bold text-primary-600"
+                  style={{ display: 'block' }}
+                >
+                  Assignly
+                </span>
+                <span className="text-sm text-gray-500">Made Simple</span>
+              </div>
             </Link>
           </div>
           <nav className="hidden md:flex space-x-8">
