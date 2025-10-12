@@ -1,19 +1,20 @@
 // Pricing configuration for Assignly
 export const pricingConfig = {
-  // Base prices for each work type (in kobo - multiply by 100 for naira)
+  // Base prices for each work type (in kobo)
   basePrices: {
-      assignment: 4999,      // ₦49.99 (existing)
-      presentation: 299900,  // ₦3,000.00
-      thesis: 499900,        // ₦5,000.00
-      report: 699900,        // ₦7,000.00
-      project: 999900       // ₦10,000.00
+      assignment: 0,         // ₦0 - assignment is purely per-page
+      presentation: 300000,  // ₦3,000.00 (flat rate)
+      thesis: 500000,        // ₦5,000.00 (flat rate)
+      report: 700000,        // ₦7,000.00 (flat rate)
+      project: 1000000       // ₦10,000.00 (flat rate)
   },
   
-  basePricePerPage: 20000,   // ₦200 per page (in kobo)
-  diagramPrice: 10000,       // ₦100 per diagram (in kobo)
-  printingPricePerPage: 30000, // ₦300 per page for printing (in kobo)
-  spiralBindingFee: 30000,   // ₦300 for spiral binding (in kobo)
-  impromptuFee: 50000,       // ₦500 for tasks with < 3 days deadline (in kobo)
+  // Per-item pricing (in kobo)
+  basePricePerPage: 20000,   // ₦200 per page (for assignments only)
+  diagramPrice: 10000,       // ₦100 per diagram
+  printingPricePerPage: 30000, // ₦300 per page for printing
+  spiralBindingFee: 30000,   // ₦300 for spiral binding
+  impromptuFee: 50000,       // ₦500 for tasks with < 3 days deadline
   
   deliveryTypes: {
     SOFT_COPY: 'soft_copy',
@@ -42,18 +43,17 @@ export const pricingConfig = {
     // Base price for work type
     if (pricingConfig.basePrices[workType]) {
       total += pricingConfig.basePrices[workType];
-    } else {
-      // Default base price if work type not found
-      total += pricingConfig.basePrices.assignment;
     }
 
-    // Base writing cost (per page)
-    total += pageCount * pricingConfig.basePricePerPage;
+    // For assignments ONLY, add per-page writing cost
+    if (workType === 'assignment') {
+      total += pageCount * pricingConfig.basePricePerPage;
+    }
 
-    // Diagrams cost
+    // Diagrams cost (applies to all work types)
     total += diagramCount * pricingConfig.diagramPrice;
 
-    // Delivery type cost
+    // Delivery type cost (applies to all work types)
     if (deliveryType === pricingConfig.deliveryTypes.PRINTED) {
       total += pageCount * pricingConfig.printingPricePerPage;
     } else if (deliveryType === pricingConfig.deliveryTypes.PRINTED_SPIRAL) {
@@ -91,17 +91,21 @@ export const pricingConfig = {
     ) : 0;
 
     // Base work type price
-    const basePrice = pricingConfig.basePrices[workType] || pricingConfig.basePrices.assignment;
-    breakdown.push({
-      item: `${workType.charAt(0).toUpperCase() + workType.slice(1)} Base Price`,
-      amount: basePrice / 100 // Convert to naira for display
-    });
+    const basePrice = pricingConfig.basePrices[workType] || 0;
+    if (basePrice > 0) {
+      breakdown.push({
+        item: `${workType.charAt(0).toUpperCase() + workType.slice(1)} Base Price`,
+        amount: basePrice / 100 // Convert to naira for display
+      });
+    }
 
-    // Base writing
-    breakdown.push({
-      item: `Writing (${pageCount} pages × ₦${pricingConfig.basePricePerPage / 100})`,
-      amount: (pageCount * pricingConfig.basePricePerPage) / 100
-    });
+    // For assignments, show per-page writing cost
+    if (workType === 'assignment') {
+      breakdown.push({
+        item: `Writing (${pageCount} pages × ₦${pricingConfig.basePricePerPage / 100})`,
+        amount: (pageCount * pricingConfig.basePricePerPage) / 100
+      });
+    }
 
     // Diagrams
     if (diagramCount > 0) {
