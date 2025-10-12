@@ -129,9 +129,8 @@ export default function TermsOfService() {
                   For questions about these Terms of Service, please contact us:
                 </p>
                 <p className="text-gray-700 mt-2">
-                  Email: legal@assignly.com<br />
                   Phone: {import.meta.env.VITE_WHATSAPP_NUMBER || '+234 XXX XXX XXXX'}<br />
-                  Address: [Your Business Address]
+                  Address: McPherson University, Seriki Sotayo, Ogun State, Nigeria
                 </p>
               </section>
             </div>

@@ -45,6 +45,12 @@ export default function Header() {
             </Link>
           </div>
           <nav className="hidden md:flex space-x-8">
+          <Link to="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
+    Privacy Policy
+  </Link>
+  <Link to="/terms-of-service" className="text-gray-400 hover:text-white transition-colors">
+    Terms of Service
+  </Link>
             <Link to="/" className="text-gray-700 hover:text-primary-600 transition-colors">Home</Link>
             <Link to="/request" className="text-gray-700 hover:text-primary-600 transition-colors">Request Help</Link>
           </nav>

@@ -88,8 +88,8 @@ export default function PrivacyPolicy() {
                   If you have any questions about this Privacy Policy, please contact us at:
                 </p>
                 <p className="text-gray-700 mt-2">
-                  Email: privacy@assignly.com<br />
                   Phone: {import.meta.env.VITE_WHATSAPP_NUMBER || '+234 XXX XXX XXXX'}
+                  Address: McPherson University, Seriki Sotayo, Ogun State, Nigeria
                 </p>
               </section>
             </div>
