@@ -3,18 +3,18 @@ export const pricingConfig = {
   // Base prices for each work type (in kobo)
   basePrices: {
       assignment: 0,         // ₦0 - assignment is purely per-page
-      presentation: 300000,  // ₦3,000.00 (flat rate)
-      thesis: 500000,        // ₦5,000.00 (flat rate)
-      report: 700000,        // ₦7,000.00 (flat rate)
-      project: 1000000       // ₦10,000.00 (flat rate)
+      presentation: 3000,  // ₦3,000.00 (flat rate)
+      thesis: 5000,        // ₦5,000.00 (flat rate)
+      report: 7000,        // ₦7,000.00 (flat rate)
+      project: 10000       // ₦10,000.00 (flat rate)
   },
   
   // Per-item pricing (in kobo)
-  basePricePerPage: 20000,   // ₦200 per page (for assignments only)
-  diagramPrice: 10000,       // ₦100 per diagram
-  printingPricePerPage: 30000, // ₦300 per page for printing
-  spiralBindingFee: 30000,   // ₦300 for spiral binding
-  impromptuFee: 50000,       // ₦500 for tasks with < 3 days deadline
+  basePricePerPage: 200,   // ₦200 per page (for assignments only)
+  diagramPrice: 100,       // ₦100 per diagram
+  printingPricePerPage: 300, // ₦300 per page for printing
+  spiralBindingFee: 300,   // ₦300 for spiral binding
+  impromptuFee: 500,       // ₦500 for tasks with < 3 days deadline
   
   deliveryTypes: {
     SOFT_COPY: 'soft_copy',
