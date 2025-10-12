@@ -95,7 +95,7 @@ export const pricingConfig = {
     if (basePrice > 0) {
       breakdown.push({
         item: `${workType.charAt(0).toUpperCase() + workType.slice(1)} Base Price`,
-        amount: basePrice / 100 // Convert to naira for display
+        amount: basePrice  // Convert to naira for display
       });
     }
 
@@ -128,7 +128,7 @@ export const pricingConfig = {
       });
       breakdown.push({
         item: 'Spiral Binding',
-        amount: pricingConfig.spiralBindingFee / 100
+        amount: pricingConfig.spiralBindingFee 
       });
     }
 
@@ -136,7 +136,7 @@ export const pricingConfig = {
     if (daysUntilDeadline < 3) {
       breakdown.push({
         item: 'Impromptu Service Fee (< 3 days deadline)',
-        amount: pricingConfig.impromptuFee / 100
+        amount: pricingConfig.impromptuFee 
       });
     }
 
