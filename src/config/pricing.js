@@ -17,12 +17,14 @@ export const pricingConfig = {
   impromptuFee: 500,       // ₦500 for tasks with < 3 days deadline
   
   deliveryTypes: {
+    HANDWRITTEN: 'handwritten',
     SOFT_COPY: 'soft_copy',
     PRINTED: 'printed',
     PRINTED_SPIRAL: 'printed_spiral'
   },
   
   deliveryTypeLabels: {
+    handwritten: 'handwritten',
     soft_copy: 'Soft Copy Only',
     printed: 'Printed Document',
     printed_spiral: 'Printed & Spiral Bound'

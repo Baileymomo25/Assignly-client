@@ -40,7 +40,7 @@ export default function Header() {
                 >
                   Assignly
                 </span>
-                <span className="text-sm text-gray-500">Made Simple</span>
+                
               </div>
             </Link>
           </div>
