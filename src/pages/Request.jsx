@@ -51,7 +51,7 @@ function Request() {
         }
       } else if (error.request) {
         // Request was made but no response received
-        errorMessage = 'No response from server. Please check your connection and try again.'
+        errorMessage = 'No response from server. Please check your connection and try again. Or contact us via WhatsApp'
       } else if (error.message) {
         // Something else happened
         errorMessage = error.message
@@ -75,7 +75,8 @@ function Request() {
         >
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Request Academic Assistance</h1>
           <p className="text-lg text-gray-600">
-            Fill out the form below and our experts will get back to you shortly
+            Fill out the form below and our experts will get back to you shortly <br> Please Note that Deadline 
+            shorter than three days will be tagged "Impromptu" and will attract Impromptu fee of NGN500 </br> 
           </p>
         </motion.div>
 
