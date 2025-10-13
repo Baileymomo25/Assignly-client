@@ -7,6 +7,7 @@ import RequestForm from '../components/Form/RequestForm'
 import api from '../services/api'
 
 function Request() {
+  // All hooks at the top - never inside conditions/loops
   const navigate = useNavigate()
   const { setRequestData, setLoading } = useApp()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -17,9 +18,8 @@ function Request() {
     
     try {
       console.log('Submitting form data:', formData)
-      console.log('API URL:', import.meta.env.VITE_BACKEND_URL)
       
-      // Submit directly to backend (remove health check)
+      // Submit to backend
       const response = await api.post('/api/requests', formData)
       
       console.log('Response received:', response.data)
@@ -38,7 +38,6 @@ function Request() {
       let errorMessage = 'Error submitting request. Please try again.'
       
       if (error.response) {
-        // Server responded with error status
         if (error.response.status === 400) {
           errorMessage = error.response.data.error || 'Invalid data. Please check your inputs.'
           if (error.response.data.missingFields) {
@@ -50,10 +49,8 @@ function Request() {
           errorMessage = 'Service temporarily unavailable. Please try again later.'
         }
       } else if (error.request) {
-        // Request was made but no response received
-        errorMessage = 'No response from server. Please check your connection and try again. Or contact us via WhatsApp'
+        errorMessage = 'No response from server. Please check your connection and try again.'
       } else if (error.message) {
-        // Something else happened
         errorMessage = error.message
       }
       
@@ -75,8 +72,9 @@ function Request() {
         >
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Request Academic Assistance</h1>
           <p className="text-lg text-gray-600">
-            Fill out the form below and our experts will get back to you shortly <br> Please Note that Deadline 
-            shorter than three days will be tagged "Impromptu" and will attract Impromptu fee of NGN500 </br> 
+            Fill out the form below and our experts will get back to you shortly
+            <br>Please Note that any order placed less than three days before the deadline would be tagged Impromptu 
+            and will attract an impromptu fee of NGN500</br>
           </p>
         </motion.div>
 
@@ -88,4 +86,4 @@ function Request() {
   )
 }
 
-export default Request;
+export default Request
