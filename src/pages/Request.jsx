@@ -3,13 +3,33 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import Card from '../components/UI/Card'
-// import RequestForm from '../components/Form/RequestForm'  // Temporarily commented
-// import api from '../services/api'  // Temporarily commented
+import RequestForm from '../components/Form/RequestForm' // Now using simple version
 
 function Request() {
   const navigate = useNavigate()
   const { setRequestData, setLoading } = useApp()
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (formData) => {
+    setIsSubmitting(true)
+    setLoading(true)
+    
+    try {
+      console.log('Form submitted:', formData)
+      
+      // Store request data in context
+      setRequestData(formData)
+      
+      // Navigate to payment page
+      navigate('/payment')
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Test submission failed')
+    } finally {
+      setIsSubmitting(false)
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -27,16 +47,7 @@ function Request() {
         </motion.div>
 
         <Card className="p-8">
-          <div className="text-center">
-            <p>Form temporarily disabled for debugging</p>
-            <button 
-              onClick={() => navigate('/payment')}
-              className="bg-primary-600 text-white px-6 py-3 rounded-lg mt-4"
-            >
-              Go to Payment (Test)
-            </button>
-          </div>
-          {/* <RequestForm onSubmit={handleSubmit} isLoading={isSubmitting} /> */}
+          <RequestForm onSubmit={handleSubmit} isLoading={isSubmitting} />
         </Card>
       </div>
     </div>
