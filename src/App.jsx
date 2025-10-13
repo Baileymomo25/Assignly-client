@@ -7,7 +7,7 @@ import Success from './pages/Success'
 import { AppProvider } from './context/AppContext'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService'
-import ErrorBoundary from './components/ErrorBoundary'
+//import ErrorBoundary from './components/ErrorBoundary'
 
 // Simple 404 component
 function NotFound() {
@@ -26,7 +26,7 @@ function NotFound() {
 
 function App() {
   return (
-    <ErrorBoundary>
+   // <ErrorBoundary>
       <AppProvider>
         <Router>
           <Layout>
@@ -42,7 +42,7 @@ function App() {
           </Layout>
         </Router>
       </AppProvider>
-    </ErrorBoundary>
+   // </ErrorBoundary>
   )
 }
 
