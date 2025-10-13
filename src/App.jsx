@@ -7,9 +7,9 @@ import Success from './pages/Success'
 import { AppProvider } from './context/AppContext'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService'
+import ErrorBoundary from './components/ErrorBoundary' // ← Add this import
 
-// Simple 404 component - MOVE THIS BEFORE App function
-{/* Add a catch-all route for 404s */}
+// Simple 404 component
 function NotFound() {
   return (
     <div style={{ padding: '2rem', textAlign: 'center' }}>
@@ -23,21 +23,21 @@ function NotFound() {
 function App() {
   return (
     <ErrorBoundary>
-    <AppProvider>
-      <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/request" element={<Request />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/success" element={<Success />} />
-            <Route path="*" element={<NotFound />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
-          </Routes>
-        </Layout>
-      </Router>
-    </AppProvider>
+      <AppProvider>
+        <Router>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/request" element={<Request />} />
+              <Route path="/payment" element={<Payment />} />
+              <Route path="/success" element={<Success />} />
+              <Route path="*" element={<NotFound />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+            </Routes>
+          </Layout>
+        </Router>
+      </AppProvider>
     </ErrorBoundary>
   )
 }
