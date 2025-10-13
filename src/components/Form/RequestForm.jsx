@@ -258,7 +258,7 @@ export default function RequestForm({ onSubmit, isLoading }) {
           <button
             type="button"
             onClick={() => setShowPricePreview(!showPricePreview)}
-            className="bg-blue-600 text-white hover: bg-blue-700 text-sm font-medium"
+            className="text-primary-600 hover:text-primary-700 text-sm font-medium"
           >
             {showPricePreview ? 'Hide Details' : 'Show Details'}
           </button>
