@@ -11,7 +11,8 @@ export default function Layout({ children }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="flex-grow"
+      
+        className="flex-grow pb-4 md:pb-0" // Added bottom padding for mobile
       >
         {children}
       </motion.main>

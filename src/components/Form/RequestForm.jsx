@@ -256,12 +256,12 @@ export default function RequestForm({ onSubmit, isLoading }) {
         <div className="flex justify-between items-center mb-2">
           <h3 className="font-semibold text-gray-900">Estimated Price</h3>
           <button
-            type="button"
-            onClick={() => setShowPricePreview(!showPricePreview)}
-            className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-          >
-            {showPricePreview ? 'Hide Details' : 'Show Details'}
-          </button>
+  type="button"
+  onClick={() => setShowPricePreview(!showPricePreview)}
+  className="bg-primary-600 text-white hover:bg-primary-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+>
+  {showPricePreview ? 'Hide Details' : 'Show Details'}
+</button>
         </div>
         
         <div className="text-2xl font-bold text-primary-600 mb-2">
