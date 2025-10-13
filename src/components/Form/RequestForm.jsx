@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Button from '../UI/Button'
 import FileUpload from './FileUpload'
-import pricingConfig from '../../config/pricing'
 
 export default function RequestForm({ onSubmit, isLoading }) {
+  // All hooks at the top - no conditions
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -15,17 +15,13 @@ export default function RequestForm({ onSubmit, isLoading }) {
     files: [],
     pageCount: 1,
     diagramCount: 0,
-    deliveryType: pricingConfig.deliveryTypes.SOFT_COPY
+    deliveryType: 'soft_copy'
   })
 
   const [errors, setErrors] = useState({})
   const [showPricePreview, setShowPricePreview] = useState(false)
 
-  // Calculate days until deadline once
-  const daysUntilDeadline = formData.deadline ? 
-    Math.ceil((new Date(formData.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : 
-    null;
-
+  // Simple validation
   const validateForm = () => {
     const newErrors = {}
     
@@ -36,12 +32,6 @@ export default function RequestForm({ onSubmit, isLoading }) {
     if (!formData.workType) newErrors.workType = 'Please select a work type'
     if (!formData.deadline) newErrors.deadline = 'Deadline is required'
     if (!formData.pageCount || formData.pageCount < 1) newErrors.pageCount = 'Page count must be at least 1'
-    if (formData.diagramCount < 0) newErrors.diagramCount = 'Diagram count cannot be negative'
-    
-    // Validate deadline is not in the past
-    if (formData.deadline && new Date(formData.deadline) < new Date()) {
-      newErrors.deadline = 'Deadline cannot be in the past'
-    }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -50,14 +40,14 @@ export default function RequestForm({ onSubmit, isLoading }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (validateForm()) {
-      // Calculate final price before submitting
-      const finalPrice = pricingConfig.calculatePrice(formData)
-      const priceBreakdown = pricingConfig.getPriceBreakdown(formData)
-      
+      // Simple pricing calculation for now
+      const totalPrice = formData.pageCount * 20000 // ₦200 per page
       const submissionData = {
         ...formData,
-        totalPrice: finalPrice,
-        priceBreakdown: priceBreakdown
+        totalPrice: totalPrice,
+        priceBreakdown: [
+          { item: `Writing (${formData.pageCount} pages × ₦200)`, amount: totalPrice }
+        ]
       }
       
       onSubmit(submissionData)
@@ -80,14 +70,6 @@ export default function RequestForm({ onSubmit, isLoading }) {
 
   const handleFilesUpload = (files) => {
     setFormData(prev => ({ ...prev, files }))
-  }
-
-  const calculatePreviewPrice = () => {
-    return pricingConfig.calculatePrice(formData)
-  }
-
-  const getPriceBreakdownPreview = () => {
-    return pricingConfig.getPriceBreakdown(formData)
   }
 
   return (
@@ -161,7 +143,6 @@ export default function RequestForm({ onSubmit, isLoading }) {
           {errors.workType && <p className="text-red-500 text-sm mt-1">{errors.workType}</p>}
         </div>
 
-        {/* Pricing Information */}
         <div>
           <label htmlFor="pageCount" className="label">Number of Pages</label>
           <input
@@ -189,7 +170,6 @@ export default function RequestForm({ onSubmit, isLoading }) {
             max="50"
             className="input-field"
           />
-          {errors.diagramCount && <p className="text-red-500 text-sm mt-1">{errors.diagramCount}</p>}
         </div>
 
         <div>
@@ -201,24 +181,14 @@ export default function RequestForm({ onSubmit, isLoading }) {
             onChange={handleInputChange}
             className="input-field"
           >
-            <option value={pricingConfig.deliveryTypes.SOFT_COPY}>Soft Copy Only (₦200/page)</option>
-            <option value={pricingConfig.deliveryTypes.PRINTED}>Printed Document (₦300/page)</option>
-            <option value={pricingConfig.deliveryTypes.PRINTED_SPIRAL}>Printed & Spiral Bound (₦300/page + ₦300 binding)</option>
+            <option value="soft_copy">Soft Copy Only (₦200/page)</option>
+            <option value="printed">Printed Document (₦300/page)</option>
+            <option value="printed_spiral">Printed & Spiral Bound (₦300/page + ₦300 binding)</option>
           </select>
         </div>
 
         <div>
-          <label htmlFor="deadline" className="label">
-            Deadline
-            {daysUntilDeadline !== null && (
-              <span className={`ml-2 text-sm ${
-                daysUntilDeadline < 3 ? 'text-red-600 font-bold' : 'text-green-600'
-              }`}>
-                ({daysUntilDeadline} days)
-                {daysUntilDeadline < 3 && ' - Impromptu fee applies'}
-              </span>
-            )}
-          </label>
+          <label htmlFor="deadline" className="label">Deadline</label>
           <input
             type="date"
             id="deadline"
@@ -248,35 +218,6 @@ export default function RequestForm({ onSubmit, isLoading }) {
       <div>
         <label className="label">Upload Files (Optional)</label>
         <FileUpload onFilesUpload={handleFilesUpload} />
-      </div>
-
-      {/* Price Preview */}
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="font-semibold text-gray-900">Estimated Price</h3>
-          <button
-            type="button"
-            onClick={() => setShowPricePreview(!showPricePreview)}
-            className="bg-primary-600 text-white hover:bg-primary-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-          >
-            {showPricePreview ? 'Hide Details' : 'Show Details'}
-          </button>
-        </div>
-        
-        <div className="text-2xl font-bold text-primary-600 mb-2">
-          ₦{calculatePreviewPrice().toLocaleString()}
-        </div>
-
-        {showPricePreview && (
-          <div className="text-sm text-gray-600 space-y-1">
-            {getPriceBreakdownPreview().map((item, index) => (
-              <div key={index} className="flex justify-between">
-                <span>{item.item}</span>
-                <span>₦{item.amount.toLocaleString()}</span>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       <Button type="submit" disabled={isLoading} className="w-full">
