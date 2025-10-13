@@ -13,7 +13,6 @@ export default function RequestForm({ onSubmit, isLoading }) {
     deadline: '',
     notes: '',
     files: [],
-    // New pricing fields
     pageCount: 1,
     diagramCount: 0,
     deliveryType: pricingConfig.deliveryTypes.SOFT_COPY
@@ -21,6 +20,11 @@ export default function RequestForm({ onSubmit, isLoading }) {
 
   const [errors, setErrors] = useState({})
   const [showPricePreview, setShowPricePreview] = useState(false)
+
+  // Calculate days until deadline once
+  const daysUntilDeadline = formData.deadline ? 
+    Math.ceil((new Date(formData.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : 
+    null;
 
   const validateForm = () => {
     const newErrors = {}
@@ -84,11 +88,6 @@ export default function RequestForm({ onSubmit, isLoading }) {
 
   const getPriceBreakdownPreview = () => {
     return pricingConfig.getPriceBreakdown(formData)
-  }
-
-  const getDaysUntilDeadline = () => {
-    if (!formData.deadline) return null
-    return Math.ceil((new Date(formData.deadline) - new Date()) / (1000 * 60 * 60 * 24))
   }
 
   return (
@@ -211,12 +210,12 @@ export default function RequestForm({ onSubmit, isLoading }) {
         <div>
           <label htmlFor="deadline" className="label">
             Deadline
-            {getDaysUntilDeadline() !== null && (
+            {daysUntilDeadline !== null && (
               <span className={`ml-2 text-sm ${
-                getDaysUntilDeadline() < 3 ? 'text-red-600 font-bold' : 'text-green-600'
+                daysUntilDeadline < 3 ? 'text-red-600 font-bold' : 'text-green-600'
               }`}>
-                ({getDaysUntilDeadline()} days)
-                {getDaysUntilDeadline() < 3 && ' - Impromptu fee applies'}
+                ({daysUntilDeadline} days)
+                {daysUntilDeadline < 3 && ' - Impromptu fee applies'}
               </span>
             )}
           </label>
@@ -256,12 +255,12 @@ export default function RequestForm({ onSubmit, isLoading }) {
         <div className="flex justify-between items-center mb-2">
           <h3 className="font-semibold text-gray-900">Estimated Price</h3>
           <button
-  type="button"
-  onClick={() => setShowPricePreview(!showPricePreview)}
-  className="bg-primary-600 text-white hover:bg-primary-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
->
-  {showPricePreview ? 'Hide Details' : 'Show Details'}
-</button>
+            type="button"
+            onClick={() => setShowPricePreview(!showPricePreview)}
+            className="bg-primary-600 text-white hover:bg-primary-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+          >
+            {showPricePreview ? 'Hide Details' : 'Show Details'}
+          </button>
         </div>
         
         <div className="text-2xl font-bold text-primary-600 mb-2">
