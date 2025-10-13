@@ -1,27 +1,19 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import Button from '../UI/Button'
-import FileUpload from './FileUpload'
 
 export default function RequestForm({ onSubmit, isLoading }) {
-  // All hooks at the top - no conditions
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phone: '',
     workType: '',
     deadline: '',
-    notes: '',
-    files: [],
     pageCount: 1,
     diagramCount: 0,
     deliveryType: 'soft_copy'
   })
 
   const [errors, setErrors] = useState({})
-  const [showPricePreview, setShowPricePreview] = useState(false)
 
-  // Simple validation
   const validateForm = () => {
     const newErrors = {}
     
@@ -40,14 +32,11 @@ export default function RequestForm({ onSubmit, isLoading }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (validateForm()) {
-      // Simple pricing calculation for now
-      const totalPrice = formData.pageCount * 20000 // ₦200 per page
+      // Simple pricing calculation
       const submissionData = {
         ...formData,
-        totalPrice: totalPrice,
-        priceBreakdown: [
-          { item: `Writing (${formData.pageCount} pages × ₦200)`, amount: totalPrice }
-        ]
+        totalPrice: formData.pageCount * 2000,
+        priceBreakdown: []
       }
       
       onSubmit(submissionData)
@@ -63,25 +52,15 @@ export default function RequestForm({ onSubmit, isLoading }) {
       [name]: parsedValue 
     }))
     
+    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }))
     }
   }
 
-  const handleFilesUpload = (files) => {
-    setFormData(prev => ({ ...prev, files }))
-  }
-
   return (
-    <motion.form
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.2 }}
-      onSubmit={handleSubmit}
-      className="space-y-6"
-    >
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Personal Information */}
         <div>
           <label htmlFor="fullName" className="label">Full Name</label>
           <input
@@ -91,13 +70,12 @@ export default function RequestForm({ onSubmit, isLoading }) {
             value={formData.fullName}
             onChange={handleInputChange}
             className="input-field"
-            placeholder="Enter your full name"
           />
           {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
         </div>
 
         <div>
-          <label htmlFor="email" className="label">Email Address</label>
+          <label htmlFor="email" className="label">Email</label>
           <input
             type="email"
             id="email"
@@ -105,13 +83,12 @@ export default function RequestForm({ onSubmit, isLoading }) {
             value={formData.email}
             onChange={handleInputChange}
             className="input-field"
-            placeholder="Enter your email"
           />
           {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
         </div>
 
         <div>
-          <label htmlFor="phone" className="label">Phone Number</label>
+          <label htmlFor="phone" className="label">Phone</label>
           <input
             type="tel"
             id="phone"
@@ -119,13 +96,12 @@ export default function RequestForm({ onSubmit, isLoading }) {
             value={formData.phone}
             onChange={handleInputChange}
             className="input-field"
-            placeholder="Enter your phone number"
           />
           {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
         </div>
 
         <div>
-          <label htmlFor="workType" className="label">Type of Work</label>
+          <label htmlFor="workType" className="label">Work Type</label>
           <select
             id="workType"
             name="workType"
@@ -144,31 +120,29 @@ export default function RequestForm({ onSubmit, isLoading }) {
         </div>
 
         <div>
-          <label htmlFor="pageCount" className="label">Number of Pages</label>
+          <label htmlFor="pageCount" className="label">Pages</label>
           <input
             type="number"
             id="pageCount"
             name="pageCount"
             value={formData.pageCount}
             onChange={handleInputChange}
-            min="1"
-            max="100"
             className="input-field"
+            min="1"
           />
           {errors.pageCount && <p className="text-red-500 text-sm mt-1">{errors.pageCount}</p>}
         </div>
 
         <div>
-          <label htmlFor="diagramCount" className="label">Number of Diagrams</label>
+          <label htmlFor="diagramCount" className="label">Diagrams</label>
           <input
             type="number"
             id="diagramCount"
             name="diagramCount"
             value={formData.diagramCount}
             onChange={handleInputChange}
-            min="0"
-            max="50"
             className="input-field"
+            min="0"
           />
         </div>
 
@@ -181,9 +155,9 @@ export default function RequestForm({ onSubmit, isLoading }) {
             onChange={handleInputChange}
             className="input-field"
           >
-            <option value="soft_copy">Soft Copy Only (₦200/page)</option>
-            <option value="printed">Printed Document (₦300/page)</option>
-            <option value="printed_spiral">Printed & Spiral Bound (₦300/page + ₦300 binding)</option>
+            <option value="soft_copy">Soft Copy Only</option>
+            <option value="printed">Printed Document</option>
+            <option value="printed_spiral">Printed & Spiral Bound</option>
           </select>
         </div>
 
@@ -203,7 +177,7 @@ export default function RequestForm({ onSubmit, isLoading }) {
       </div>
 
       <div>
-        <label htmlFor="notes" className="label">Additional Notes & Requirements</label>
+        <label htmlFor="notes" className="label">Additional Notes</label>
         <textarea
           id="notes"
           name="notes"
@@ -211,18 +185,17 @@ export default function RequestForm({ onSubmit, isLoading }) {
           onChange={handleInputChange}
           rows={4}
           className="input-field"
-          placeholder="Any specific requirements, instructions, or special requests..."
+          placeholder="Any specific requirements..."
         />
       </div>
 
-      <div>
-        <label className="label">Upload Files (Optional)</label>
-        <FileUpload onFilesUpload={handleFilesUpload} />
-      </div>
-
-      <Button type="submit" disabled={isLoading} className="w-full">
+      <button 
+        type="submit" 
+        className="bg-primary-600 text-white px-6 py-3 rounded-lg w-full"
+        disabled={isLoading}
+      >
         {isLoading ? 'Processing...' : 'Continue to Payment'}
-      </Button>
-    </motion.form>
+      </button>
+    </form>
   )
 }
