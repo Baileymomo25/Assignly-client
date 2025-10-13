@@ -5,7 +5,6 @@ import { useApp } from '../context/AppContext'
 import Card from '../components/UI/Card'
 import RequestForm from '../components/Form/RequestForm'
 import api from '../services/api'
-import pricingConfig from '../../config/pricing'
 
 function Request() {
   const navigate = useNavigate()
