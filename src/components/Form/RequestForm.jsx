@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Button from '../UI/Button'  // Add this import
 
 export default function RequestForm({ onSubmit, isLoading }) {
   const [formData, setFormData] = useState({
@@ -7,6 +8,8 @@ export default function RequestForm({ onSubmit, isLoading }) {
     phone: '',
     workType: '',
     deadline: '',
+    notes: '',
+    files: [],
     pageCount: 1,
     diagramCount: 0,
     deliveryType: 'soft_copy'
@@ -189,13 +192,10 @@ export default function RequestForm({ onSubmit, isLoading }) {
         />
       </div>
 
-      <button 
-        type="submit" 
-        className="bg-primary-600 text-white px-6 py-3 rounded-lg w-full"
-        disabled={isLoading}
-      >
+      {/* Use the custom Button component */}
+      <Button type="submit" disabled={isLoading} className="w-full">
         {isLoading ? 'Processing...' : 'Continue to Payment'}
-      </button>
+      </Button>
     </form>
   )
 }
