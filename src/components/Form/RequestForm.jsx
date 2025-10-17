@@ -1,5 +1,8 @@
 import { useState } from 'react'
-import Button from '../UI/Button'  // Add this import
+import { motion } from 'framer-motion'
+import Button from '../UI/Button'
+import FileUpload from './FileUpload'
+import pricingConfig from '../../config/pricing'
 
 export default function RequestForm({ onSubmit, isLoading }) {
   const [formData, setFormData] = useState({
@@ -12,10 +15,16 @@ export default function RequestForm({ onSubmit, isLoading }) {
     files: [],
     pageCount: 1,
     diagramCount: 0,
-    deliveryType: 'soft_copy'
+    deliveryType: pricingConfig.deliveryTypes.SOFT_COPY
   })
 
   const [errors, setErrors] = useState({})
+  const [showPricePreview, setShowPricePreview] = useState(false)
+
+  // Calculate days until deadline - moved to variable to avoid hook issues
+  const daysUntilDeadline = formData.deadline ? 
+    Math.ceil((new Date(formData.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : 
+    null
 
   const validateForm = () => {
     const newErrors = {}
@@ -27,6 +36,12 @@ export default function RequestForm({ onSubmit, isLoading }) {
     if (!formData.workType) newErrors.workType = 'Please select a work type'
     if (!formData.deadline) newErrors.deadline = 'Deadline is required'
     if (!formData.pageCount || formData.pageCount < 1) newErrors.pageCount = 'Page count must be at least 1'
+    if (formData.diagramCount < 0) newErrors.diagramCount = 'Diagram count cannot be negative'
+    
+    // Validate deadline is not in the past
+    if (formData.deadline && new Date(formData.deadline) < new Date()) {
+      newErrors.deadline = 'Deadline cannot be in the past'
+    }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -35,11 +50,14 @@ export default function RequestForm({ onSubmit, isLoading }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (validateForm()) {
-      // Simple pricing calculation
+      // Calculate final price before submitting
+      const finalPrice = pricingConfig.calculatePrice(formData)
+      const priceBreakdown = pricingConfig.getPriceBreakdown(formData)
+      
       const submissionData = {
         ...formData,
-        totalPrice: formData.pageCount * 2000,
-        priceBreakdown: []
+        totalPrice: finalPrice,
+        priceBreakdown: priceBreakdown
       }
       
       onSubmit(submissionData)
@@ -55,15 +73,33 @@ export default function RequestForm({ onSubmit, isLoading }) {
       [name]: parsedValue 
     }))
     
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }))
     }
   }
 
+  const handleFilesUpload = (files) => {
+    setFormData(prev => ({ ...prev, files }))
+  }
+
+  const calculatePreviewPrice = () => {
+    return pricingConfig.calculatePrice(formData)
+  }
+
+  const getPriceBreakdownPreview = () => {
+    return pricingConfig.getPriceBreakdown(formData)
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <motion.form
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.2 }}
+      onSubmit={handleSubmit}
+      className="space-y-6"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Personal Information */}
         <div>
           <label htmlFor="fullName" className="label">Full Name</label>
           <input
@@ -73,12 +109,13 @@ export default function RequestForm({ onSubmit, isLoading }) {
             value={formData.fullName}
             onChange={handleInputChange}
             className="input-field"
+            placeholder="Enter your full name"
           />
           {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
         </div>
 
         <div>
-          <label htmlFor="email" className="label">Email</label>
+          <label htmlFor="email" className="label">Email Address</label>
           <input
             type="email"
             id="email"
@@ -86,12 +123,13 @@ export default function RequestForm({ onSubmit, isLoading }) {
             value={formData.email}
             onChange={handleInputChange}
             className="input-field"
+            placeholder="Enter your email"
           />
           {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
         </div>
 
         <div>
-          <label htmlFor="phone" className="label">Phone</label>
+          <label htmlFor="phone" className="label">Phone Number</label>
           <input
             type="tel"
             id="phone"
@@ -99,12 +137,13 @@ export default function RequestForm({ onSubmit, isLoading }) {
             value={formData.phone}
             onChange={handleInputChange}
             className="input-field"
+            placeholder="Enter your phone number"
           />
           {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
         </div>
 
         <div>
-          <label htmlFor="workType" className="label">Work Type</label>
+          <label htmlFor="workType" className="label">Type of Work</label>
           <select
             id="workType"
             name="workType"
@@ -122,31 +161,35 @@ export default function RequestForm({ onSubmit, isLoading }) {
           {errors.workType && <p className="text-red-500 text-sm mt-1">{errors.workType}</p>}
         </div>
 
+        {/* Pricing Information */}
         <div>
-          <label htmlFor="pageCount" className="label">Pages</label>
+          <label htmlFor="pageCount" className="label">Number of Pages</label>
           <input
             type="number"
             id="pageCount"
             name="pageCount"
             value={formData.pageCount}
             onChange={handleInputChange}
-            className="input-field"
             min="1"
+            max="100"
+            className="input-field"
           />
           {errors.pageCount && <p className="text-red-500 text-sm mt-1">{errors.pageCount}</p>}
         </div>
 
         <div>
-          <label htmlFor="diagramCount" className="label">Diagrams</label>
+          <label htmlFor="diagramCount" className="label">Number of Diagrams</label>
           <input
             type="number"
             id="diagramCount"
             name="diagramCount"
             value={formData.diagramCount}
             onChange={handleInputChange}
-            className="input-field"
             min="0"
+            max="50"
+            className="input-field"
           />
+          {errors.diagramCount && <p className="text-red-500 text-sm mt-1">{errors.diagramCount}</p>}
         </div>
 
         <div>
@@ -158,14 +201,24 @@ export default function RequestForm({ onSubmit, isLoading }) {
             onChange={handleInputChange}
             className="input-field"
           >
-            <option value="soft_copy">Soft Copy Only</option>
-            <option value="printed">Printed Document</option>
-            <option value="printed_spiral">Printed & Spiral Bound</option>
+            <option value={pricingConfig.deliveryTypes.SOFT_COPY}>Soft Copy Only (₦200/page)</option>
+            <option value={pricingConfig.deliveryTypes.PRINTED}>Printed Document (₦300/page)</option>
+            <option value={pricingConfig.deliveryTypes.PRINTED_SPIRAL}>Printed & Spiral Bound (₦300/page + ₦300 binding)</option>
           </select>
         </div>
 
         <div>
-          <label htmlFor="deadline" className="label">Deadline</label>
+          <label htmlFor="deadline" className="label">
+            Deadline
+            {daysUntilDeadline !== null && (
+              <span className={`ml-2 text-sm ${
+                daysUntilDeadline < 3 ? 'text-red-600 font-bold' : 'text-green-600'
+              }`}>
+                ({daysUntilDeadline} days)
+                {daysUntilDeadline < 3 && ' - Impromptu fee applies'}
+              </span>
+            )}
+          </label>
           <input
             type="date"
             id="deadline"
@@ -180,7 +233,7 @@ export default function RequestForm({ onSubmit, isLoading }) {
       </div>
 
       <div>
-        <label htmlFor="notes" className="label">Additional Notes</label>
+        <label htmlFor="notes" className="label">Additional Notes & Requirements</label>
         <textarea
           id="notes"
           name="notes"
@@ -188,14 +241,47 @@ export default function RequestForm({ onSubmit, isLoading }) {
           onChange={handleInputChange}
           rows={4}
           className="input-field"
-          placeholder="Any specific requirements..."
+          placeholder="Any specific requirements, instructions, or special requests..."
         />
       </div>
 
-      {/* Use the custom Button component */}
+      <div>
+        <label className="label">Upload Files (Optional)</label>
+        <FileUpload onFilesUpload={handleFilesUpload} />
+      </div>
+
+      {/* Price Preview */}
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="font-semibold text-gray-900">Estimated Price</h3>
+          <button
+            type="button"
+            onClick={() => setShowPricePreview(!showPricePreview)}
+            className="bg-primary-600 text-white hover:bg-primary-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+          >
+            {showPricePreview ? 'Hide Details' : 'Show Details'}
+          </button>
+        </div>
+        
+        <div className="text-2xl font-bold text-primary-600 mb-2">
+          ₦{(calculatePreviewPrice() / 100).toLocaleString()}
+        </div>
+
+        {showPricePreview && (
+          <div className="text-sm text-gray-600 space-y-1">
+            {getPriceBreakdownPreview().map((item, index) => (
+              <div key={index} className="flex justify-between">
+                <span>{item.item}</span>
+                <span>₦{item.amount.toLocaleString()}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       <Button type="submit" disabled={isLoading} className="w-full">
         {isLoading ? 'Processing...' : 'Continue to Payment'}
       </Button>
-    </form>
+    </motion.form>
   )
 }
