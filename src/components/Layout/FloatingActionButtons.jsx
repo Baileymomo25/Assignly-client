@@ -9,7 +9,7 @@ export default function FloatingActionButtons() {
     {
       icon: <MessageCircle className="h-5 w-5" />,
       label: "WhatsApp",
-      href: `https://wa.me/${whatsappNumber}?text=Hi%20Assignly,%20I%20need%20help%20with%20my%20assignment`,
+      href: `https://wa.me/2347030043359?text=Hi%20Assignly_Bot,%20I%20need%20help%20with%20my%20assignment`,
       color: "bg-green-500 hover:bg-green-600"
     },
     {
