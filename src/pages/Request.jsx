@@ -42,8 +42,9 @@ function Request() {
         >
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Request Academic Assistance</h1>
           <p className="text-lg text-gray-600">
-            Fill out the form below and our experts will get back to you shortly <br>Please note that any request made less than
-             three days prior to the deadline will be regarded as Impromptu and would attract an extra fee of NGN500</br>
+            Fill out the form below and our experts will get back to you shortly. Please note that any 
+            request made less than three days prior to the deadline will be regarded as Impromptu 
+            and would attract an extra fee of NGN500
           </p>
         </motion.div>
 
