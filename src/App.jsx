@@ -7,9 +7,7 @@ import Success from './pages/Success'
 import { AppProvider } from './context/AppContext'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService'
-import SplashScreen from './components/UI/SplashScreen'
 
-// Simple 404 component
 function NotFound() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -28,25 +26,17 @@ function App() {
   return (
       <AppProvider>
         <Router>
-          <Routes>
-            {/* Splash Screen Route */}
-            <Route path="/" element={<SplashScreen />} />
-            
-            {/* Main App Routes with Layout */}
-            <Route path="/*" element={
-              <Layout>
-                <Routes>
-                  <Route path="/home" element={<Home />} />
-                  <Route path="/request" element={<Request />} />
-                  <Route path="/payment" element={<Payment />} />
-                  <Route path="/success" element={<Success />} />
-                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                  <Route path="/terms-of-service" element={<TermsOfService />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Layout>
-            } />
-          </Routes>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/request" element={<Request />} />
+              <Route path="/payment" element={<Payment />} />
+              <Route path="/success" element={<Success />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
         </Router>
       </AppProvider>
   )

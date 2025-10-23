@@ -212,6 +212,7 @@ export default function RequestForm({ onSubmit, isLoading }) {
             <option value="thesis">Thesis</option>
             <option value="report">Report</option>
             <option value="presentation">Presentation Slides</option>
+            <option value="writing_notes">Writing of Notes (₦200/page)</option>
           </select>
           {errors.workType && <p className="text-red-500 text-sm mt-1">{errors.workType}</p>}
         </div>
@@ -259,6 +260,7 @@ export default function RequestForm({ onSubmit, isLoading }) {
             <option value={pricingConfig.deliveryTypes.SOFT_COPY}>Soft Copy Only (₦200/page)</option>
             <option value={pricingConfig.deliveryTypes.PRINTED}>Printed Document (₦300/page)</option>
             <option value={pricingConfig.deliveryTypes.PRINTED_SPIRAL}>Printed & Spiral Bound (₦300/page + ₦300 binding)</option>
+            <option value={pricingConfig.deliveryTypes.HANDWRITTEN}>Handwritten (₦300/page)</option>
           </select>
         </div>
 
