@@ -1,55 +1,56 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
 
-export default function SplashScreen() {
-  const navigate = useNavigate()
-
+export default function SplashScreen({ onComplete }) {
+  const [showFallback, setShowFallback] = useState(false)
+  
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/home')
-    }, 3000) // 3 seconds
+      onComplete()
+    }, 3000)
 
     return () => clearTimeout(timer)
-  }, [navigate])
+  }, [onComplete])
+
+  // In the component, change the logoPath to:
+const logoPath = `${window.location.origin}/logo.png`
+  const handleLogoLoad = () => {
+    console.log('✅ Logo loaded successfully from:', logoPath)
+  }
+
+  const handleLogoError = (e) => {
+    console.error('❌ Logo failed to load from:', logoPath)
+    console.log('Image error event:', e)
+    setShowFallback(true)
+  }
+
+  console.log('🔄 SplashScreen rendering, logo path:', logoPath)
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
-      className="min-h-screen bg-white flex items-center justify-center"
-    >
+    <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ 
-          delay: 0.3,
-          duration: 0.8,
-          ease: "easeOut"
-        }}
+        transition={{ duration: 0.8 }}
         className="text-center"
       >
-        {/* Replace with your actual logo - for now using text */}
+        {/* Logo Image */}
         <img 
-                src={logoPath} 
-                alt="Assignly Logo" 
-                className="w-48 h-48 object-contain"
-                onError={(e) => {
-                  // Fallback if the logo file doesn't exist
-                  console.error('Logo not found:', logoPath);
-                  e.target.style.display = 'none';
-                  
-                  // Show text fallback
-                  const fallbackElement = e.target.nextElementSibling;
-                  if (fallbackElement) {
-                    fallbackElement.style.display = 'block';
-                  }
-                }}
-            
-           
-            />
+          src={logoPath} 
+          alt="Assignly Logo" 
+          className="h-32 w-auto mx-auto mb-4"
+          onLoad={handleLogoLoad}
+          onError={handleLogoError}
+          style={{ display: showFallback ? 'none' : 'block' }}
+        />
+        
+        {/* Text fallback */}
+        {showFallback && (
+          <div className="text-4xl font-bold text-primary-600 mb-4">
+            Assignly
+          </div>
+        )}
+
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: 100 }}
@@ -57,6 +58,6 @@ export default function SplashScreen() {
           className="h-1 bg-primary-600 mx-auto rounded-full"
         />
       </motion.div>
-    </motion.div>
+    </div>
   )
 }

@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import Layout from './components/Layout/Layout'
 import Home from './pages/Home'
 import Request from './pages/Request'
@@ -23,22 +24,44 @@ function NotFound() {
 }
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false)
+    }, 3000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (showSplash) {
+    return (
+      <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl font-bold text-primary-600 mb-4">
+            Assignly
+          </div>
+          <div className="h-1 bg-primary-600 mx-auto rounded-full w-24"></div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-      <AppProvider>
-        <Router>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/request" element={<Request />} />
-              <Route path="/payment" element={<Payment />} />
-              <Route path="/success" element={<Success />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
-        </Router>
-      </AppProvider>
+    <AppProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/request" element={<Request />} />
+            <Route path="/payment" element={<Payment />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </AppProvider>
   )
 }
 
