@@ -9,6 +9,9 @@ export default function RequestForm({ onSubmit, isLoading }) {
     fullName: '',
     email: '',
     phone: '',
+    department: '',
+    level: '',
+    courseOfStudy: '',
     workType: '',
     deadline: '',
     notes: '',
@@ -21,7 +24,7 @@ export default function RequestForm({ onSubmit, isLoading }) {
   const [errors, setErrors] = useState({})
   const [showPricePreview, setShowPricePreview] = useState(false)
 
-  // Calculate days until deadline - moved to variable to avoid hook issues
+  // Calculate days until deadline
   const daysUntilDeadline = formData.deadline ? 
     Math.ceil((new Date(formData.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : 
     null
@@ -33,6 +36,9 @@ export default function RequestForm({ onSubmit, isLoading }) {
     if (!formData.email.trim()) newErrors.email = 'Email is required'
     else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid'
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required'
+    if (!formData.department.trim()) newErrors.department = 'Department is required'
+    if (!formData.level) newErrors.level = 'Level is required'
+    if (!formData.courseOfStudy.trim()) newErrors.courseOfStudy = 'Course of study is required'
     if (!formData.workType) newErrors.workType = 'Please select a work type'
     if (!formData.deadline) newErrors.deadline = 'Deadline is required'
     if (!formData.pageCount || formData.pageCount < 1) newErrors.pageCount = 'Page count must be at least 1'
@@ -140,6 +146,55 @@ export default function RequestForm({ onSubmit, isLoading }) {
             placeholder="Enter your phone number"
           />
           {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+        </div>
+
+        {/* Academic Information */}
+        <div>
+          <label htmlFor="department" className="label">Department</label>
+          <input
+            type="text"
+            id="department"
+            name="department"
+            value={formData.department}
+            onChange={handleInputChange}
+            className="input-field"
+            placeholder="e.g., Computer Science"
+          />
+          {errors.department && <p className="text-red-500 text-sm mt-1">{errors.department}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="level" className="label">Level</label>
+          <select
+            id="level"
+            name="level"
+            value={formData.level}
+            onChange={handleInputChange}
+            className="input-field"
+          >
+            <option value="">Select your level</option>
+            <option value="100">100 Level</option>
+            <option value="200">200 Level</option>
+            <option value="300">300 Level</option>
+            <option value="400">400 Level</option>
+            <option value="500">500 Level</option>
+            <option value="Postgraduate">Postgraduate</option>
+          </select>
+          {errors.level && <p className="text-red-500 text-sm mt-1">{errors.level}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="courseOfStudy" className="label">Course of Study</label>
+          <input
+            type="text"
+            id="courseOfStudy"
+            name="courseOfStudy"
+            value={formData.courseOfStudy}
+            onChange={handleInputChange}
+            className="input-field"
+            placeholder="e.g., Introduction to Programming"
+          />
+          {errors.courseOfStudy && <p className="text-red-500 text-sm mt-1">{errors.courseOfStudy}</p>}
         </div>
 
         <div>
