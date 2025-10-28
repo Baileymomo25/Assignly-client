@@ -1,23 +1,23 @@
 // Pricing configuration for Assignly
 export const pricingConfig = {
-  // Base prices for each work type (in kobo)
+  // Base prices for each work type (in Naira)
   basePrices: {
       assignment: 0,         // ₦0 - assignment is purely per-page
-      presentation: 300000,  // ₦3,000.00 (flat rate)
-      thesis: 700000,        // ₦7,000.00 (flat rate) - UPDATED
-      report: 700000,        // ₦7,000.00 (flat rate)
-      project: 1500000,      // ₦15,000.00 (flat rate) - UPDATED
+      presentation: 3000,    // ₦3,000.00 (flat rate)
+      thesis: 7000,          // ₦7,000.00 (flat rate)
+      report: 7000,          // ₦7,000.00 (flat rate)
+      project: 15000,        // ₦15,000.00 (flat rate)
       writing_notes: 0       // ₦0 - writing notes is purely per-page
   },
   
-  // Per-item pricing (in kobo)
-  basePricePerPage: 30000,   // ₦300 per page (for assignments and writing service) - UPDATED
-  writingNotesPricePerPage: 30000, // ₦300 per page for writing service - UPDATED
-  handwrittenPricePerPage: 40000, // ₦400 per page for handwritten - UPDATED
-  printingPricePerPage: 10000, // ₦100 per page for printing - UPDATED
-  diagramPrice: 20000,       // ₦200 per diagram - UPDATED
-  spiralBindingFee: 30000,   // ₦300 for spiral binding
-  impromptuFee: 50000,       // ₦500 for tasks with < 3 days deadline
+  // Per-item pricing (in Naira)
+  basePricePerPage: 300,            // ₦300 per page
+  writingNotesPricePerPage: 300,    // ₦300 per page
+  handwrittenPricePerPage: 400,     // ₦400 per page
+  printingPricePerPage: 100,        // ₦100 per page
+  diagramPrice: 200,                // ₦200 per diagram
+  spiralBindingFee: 300,            // ₦300 for spiral binding
+  impromptuFee: 500,                // ₦500 for tasks with < 3 days deadline
   
   deliveryTypes: {
     SOFT_COPY: 'soft_copy',
@@ -53,22 +53,22 @@ export const pricingConfig = {
     // For assignments ONLY, add per-page writing cost
     if (workType === 'assignment') {
       if (deliveryType === pricingConfig.deliveryTypes.SOFT_COPY) {
-        total += pageCount * pricingConfig.basePricePerPage; // ₦300 per page
+        total += pageCount * pricingConfig.basePricePerPage;
       } else if (deliveryType === pricingConfig.deliveryTypes.PRINTED || 
                  deliveryType === pricingConfig.deliveryTypes.PRINTED_SPIRAL) {
-        total += pageCount * (pricingConfig.basePricePerPage + pricingConfig.printingPricePerPage); // ₦300 + ₦100 = ₦400 per page
+        total += pageCount * (pricingConfig.basePricePerPage + pricingConfig.printingPricePerPage);
       } else if (deliveryType === pricingConfig.deliveryTypes.HANDWRITTEN) {
-        total += pageCount * pricingConfig.handwrittenPricePerPage; // ₦400 per page
+        total += pageCount * pricingConfig.handwrittenPricePerPage;
       }
     }
 
-    // For writing_notes, add per-page writing cost (always ₦300 per page)
+    // For writing_notes, add per-page writing cost
     if (workType === 'writing_notes') {
-      total += pageCount * pricingConfig.writingNotesPricePerPage; // ₦300 per page
+      total += pageCount * pricingConfig.writingNotesPricePerPage;
     }
 
     // Diagrams cost (applies to all work types)
-    total += diagramCount * pricingConfig.diagramPrice; // ₦200 per diagram
+    total += diagramCount * pricingConfig.diagramPrice;
 
     // Delivery type cost for non-assignment work types
     if (workType !== 'assignment') {
@@ -82,8 +82,8 @@ export const pricingConfig = {
       }
     }
 
-    // Spiral binding fee for printed spiral (for assignment, already included in per-page cost)
-    if (workType !== 'assignment' && deliveryType === pricingConfig.deliveryTypes.PRINTED_SPIRAL) {
+    // Spiral binding fee for assignment printed spiral
+    if (workType === 'assignment' && deliveryType === pricingConfig.deliveryTypes.PRINTED_SPIRAL) {
       total += pricingConfig.spiralBindingFee;
     }
 
@@ -121,7 +121,7 @@ export const pricingConfig = {
     if (basePrice > 0) {
       breakdown.push({
         item: `${workType.charAt(0).toUpperCase() + workType.slice(1)} Base Price`,
-        amount: basePrice / 100
+        amount: basePrice
       });
     }
 
@@ -129,19 +129,19 @@ export const pricingConfig = {
     if (workType === 'assignment') {
       if (deliveryType === pricingConfig.deliveryTypes.SOFT_COPY) {
         breakdown.push({
-          item: `Writing (${pageCount} pages × ₦${pricingConfig.basePricePerPage / 100})`,
-          amount: (pageCount * pricingConfig.basePricePerPage) / 100
+          item: `Writing (${pageCount} pages × ₦${pricingConfig.basePricePerPage})`,
+          amount: pageCount * pricingConfig.basePricePerPage
         });
       } else if (deliveryType === pricingConfig.deliveryTypes.PRINTED || 
                  deliveryType === pricingConfig.deliveryTypes.PRINTED_SPIRAL) {
         breakdown.push({
-          item: `Writing & Printing (${pageCount} pages × ₦${(pricingConfig.basePricePerPage + pricingConfig.printingPricePerPage) / 100})`,
-          amount: (pageCount * (pricingConfig.basePricePerPage + pricingConfig.printingPricePerPage)) / 100
+          item: `Writing & Printing (${pageCount} pages × ₦${pricingConfig.basePricePerPage + pricingConfig.printingPricePerPage})`,
+          amount: pageCount * (pricingConfig.basePricePerPage + pricingConfig.printingPricePerPage)
         });
       } else if (deliveryType === pricingConfig.deliveryTypes.HANDWRITTEN) {
         breakdown.push({
-          item: `Handwritten (${pageCount} pages × ₦${pricingConfig.handwrittenPricePerPage / 100})`,
-          amount: (pageCount * pricingConfig.handwrittenPricePerPage) / 100
+          item: `Handwritten (${pageCount} pages × ₦${pricingConfig.handwrittenPricePerPage})`,
+          amount: pageCount * pricingConfig.handwrittenPricePerPage
         });
       }
     }
@@ -149,16 +149,16 @@ export const pricingConfig = {
     // For writing_notes, show per-page writing cost
     if (workType === 'writing_notes') {
       breakdown.push({
-        item: `Writing Service (${pageCount} pages × ₦${pricingConfig.writingNotesPricePerPage / 100})`,
-        amount: (pageCount * pricingConfig.writingNotesPricePerPage) / 100
+        item: `Writing Service (${pageCount} pages × ₦${pricingConfig.writingNotesPricePerPage})`,
+        amount: pageCount * pricingConfig.writingNotesPricePerPage
       });
     }
 
     // Diagrams
     if (diagramCount > 0) {
       breakdown.push({
-        item: `Diagrams (${diagramCount} × ₦${pricingConfig.diagramPrice / 100})`,
-        amount: (diagramCount * pricingConfig.diagramPrice) / 100
+        item: `Diagrams (${diagramCount} × ₦${pricingConfig.diagramPrice})`,
+        amount: diagramCount * pricingConfig.diagramPrice
       });
     }
 
@@ -166,22 +166,22 @@ export const pricingConfig = {
     if (workType !== 'assignment') {
       if (deliveryType === pricingConfig.deliveryTypes.PRINTED) {
         breakdown.push({
-          item: `Printing (${pageCount} pages × ₦${pricingConfig.printingPricePerPage / 100})`,
-          amount: (pageCount * pricingConfig.printingPricePerPage) / 100
+          item: `Printing (${pageCount} pages × ₦${pricingConfig.printingPricePerPage})`,
+          amount: pageCount * pricingConfig.printingPricePerPage
         });
       } else if (deliveryType === pricingConfig.deliveryTypes.PRINTED_SPIRAL) {
         breakdown.push({
-          item: `Printing (${pageCount} pages × ₦${pricingConfig.printingPricePerPage / 100})`,
-          amount: (pageCount * pricingConfig.printingPricePerPage) / 100
+          item: `Printing (${pageCount} pages × ₦${pricingConfig.printingPricePerPage})`,
+          amount: pageCount * pricingConfig.printingPricePerPage
         });
         breakdown.push({
           item: 'Spiral Binding',
-          amount: pricingConfig.spiralBindingFee / 100
+          amount: pricingConfig.spiralBindingFee
         });
       } else if (deliveryType === pricingConfig.deliveryTypes.HANDWRITTEN) {
         breakdown.push({
-          item: `Handwritten (${pageCount} pages × ₦${pricingConfig.handwrittenPricePerPage / 100})`,
-          amount: (pageCount * pricingConfig.handwrittenPricePerPage) / 100
+          item: `Handwritten (${pageCount} pages × ₦${pricingConfig.handwrittenPricePerPage})`,
+          amount: pageCount * pricingConfig.handwrittenPricePerPage
         });
       }
     }
@@ -190,7 +190,7 @@ export const pricingConfig = {
     if (workType === 'assignment' && deliveryType === pricingConfig.deliveryTypes.PRINTED_SPIRAL) {
       breakdown.push({
         item: 'Spiral Binding',
-        amount: pricingConfig.spiralBindingFee / 100
+        amount: pricingConfig.spiralBindingFee
       });
     }
 
@@ -198,7 +198,7 @@ export const pricingConfig = {
     if (daysUntilDeadline < 3) {
       breakdown.push({
         item: 'Impromptu Service Fee (< 3 days deadline)',
-        amount: pricingConfig.impromptuFee / 100
+        amount: pricingConfig.impromptuFee
       });
     }
 

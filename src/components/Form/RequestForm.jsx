@@ -323,7 +323,7 @@ export default function RequestForm({ onSubmit, isLoading }) {
         </div>
         
         <div className="text-2xl font-bold text-primary-600 mb-2">
-          ₦{(calculatePreviewPrice() / 100).toLocaleString()}
+          ₦{calculatePreviewPrice().toLocaleString()}
         </div>
 
         {showPricePreview && (
